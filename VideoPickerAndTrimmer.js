@@ -25,13 +25,14 @@ const VideoPickerAndTrimmer = ({onTrimVideo}) => {
         Alert.alert('Error', response.errorMessage);
       } else if (response.assets && response.assets.length > 0) {
         const selectedVideo = response.assets[0];
+        console.log(selectedVideo, 'selectedVideo=====>');
         setVideo({
           uri: selectedVideo.uri,
           fileName: selectedVideo.fileName,
-          duration: selectedVideo.duration / 1000, // convert to seconds
+          duration: selectedVideo.duration, // convert to seconds
         });
-        setDuration(selectedVideo.duration / 1000); // Set the video duration
-        setEndTime(selectedVideo.duration / 1000); // Set the end time to video length
+        setDuration(selectedVideo.duration); // Set the video duration
+        setEndTime(selectedVideo.duration); // Set the end time to video length
       }
     });
   };
