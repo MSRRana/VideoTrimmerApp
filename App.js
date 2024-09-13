@@ -9,32 +9,9 @@ import {
 import VideoPickerAndTrimmer from './VideoPickerAndTrimmer'; // The component created above
 import RNFS from 'react-native-fs';
 import {request, PERMISSIONS} from 'react-native-permissions';
-
+import {androidCameraPermission} from './premission';
 const {VideoTrimmer} = NativeModules;
 
-// Request storage permissions for Android
-const requestPermission = async () => {
-  const result = await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
-  return result === 'granted';
-};
-const checkPermissions = async () => {
-  try {
-    const hasWritePermission = await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-    );
-    const hasReadPermission = await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-    );
-
-    if (hasWritePermission && hasReadPermission) {
-      console.log('Permissions already granted');
-    } else {
-      console.log('Permissions not granted');
-    }
-  } catch (error) {
-    console.error('Error checking permissions:', error);
-  }
-};
 const RequestStoragePermission = async () => {
   if (Platform.OS === 'android') {
     try {
@@ -96,15 +73,15 @@ const generateOutputPath = () => {
 
 // Move trimmed video to public file manager folder
 const saveTrimmedVideoToFileManager = async trimmedVideoPath => {
-  const hasPermission = await RequestStoragePermission();
+  // const hasPermission = await requestAccessPermissions();
 
-  if (!hasPermission) {
-    Alert.alert(
-      'Permission Denied',
-      'Storage permission is required to save the video.',
-    );
-    return;
-  }
+  // if (!hasPermission) {
+  //   Alert.alert(
+  //     'Permission Denied',
+  //     'Storage permission is required to save the video.',
+  //   );
+  //   return;
+  // }
 
   const destinationPath = `${
     RNFS.DownloadDirectoryPath
@@ -132,10 +109,14 @@ const handleTrimVideo = async (videoUri, startTime, endTime) => {
 };
 
 const App = () => {
+  const requestAccessPermissions = async () => {
+    const res = await androidCameraPermission();
+
+    console.log(res, 'res=====>');
+  };
   useEffect(() => {
-    checkPermissions();
-    RequestStoragePermission();
-    requestPermission();
+    requestAccessPermissions();
+    // RequestStoragePermission();
   }, []);
   return (
     <View style={{flex: 1}}>
